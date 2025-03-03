@@ -33,15 +33,16 @@ export class News extends Component {
         
     }
 
-    async updateNews(pageNo){
+    async updateNews(){
         const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=7ed5f56d0441406e93f6a7ffb02a68ce&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+        this.setState({loading: true});
         let data = await fetch(url);
         let parsedData = await data.json();
         this.setState(
             {
                 articles: parsedData.articles, 
                 totalResults: parsedData.totalResults,
-                loading: false
+                loading: false,
             })
     }
 
@@ -56,7 +57,6 @@ export class News extends Component {
         //         totalResults: parsedData.totalResults,
         //         loading: false
         //     })
-
         this.updateNews();
     }
 
@@ -97,15 +97,14 @@ export class News extends Component {
 
 
         fetchMoreData = async () => {
+            this.setState({page: this.state.page + 1});
             const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=7ed5f56d0441406e93f6a7ffb02a68ce&page=${this.state.page}&pageSize=${this.props.pageSize}`;
-            this.setState({loading: true});
             let data = await fetch(url);
             let parsedData = await data.json();
             this.setState(
                 {
                     articles: this.state.articles.concat(parsedData.articles), 
                     totalResults: parsedData.totalResults,
-                    loading: false
                 })
         };
 
@@ -113,7 +112,7 @@ export class News extends Component {
         return (
             <>
                 <h2 className='text-center' style={{margin: '35px 0px'}}>InstaNews - Top {this.toCapitalizeString(this.props.category)} Headlines</h2>
-                {/* {this.state.loading && <Spinner />} */}
+                {this.state.loading && <Spinner />}
                 <InfiniteScroll
                     dataLength={this.state.articles.length}
                     next={this.fetchMoreData}
